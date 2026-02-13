@@ -1,6 +1,7 @@
 import { group, sleep, check } from "k6";
 import http from "k6/http";
 import { SharedArray } from "k6/data";
+import { customSummary } from "../Helpers/summaryHelper.js";
 
 // ---------- LOAD CONFIG / DATA ----------
 const envCfg = JSON.parse(open("../config/env.json"));
@@ -37,6 +38,11 @@ function formBody(obj) {
     .join("&");
 }
 
+export function handleSummary(data) {
+  return customSummary(data);
+}
+
+
 // Header essenziali
 const BASE_HEADERS = {
   "content-type": "application/x-www-form-urlencoded",
@@ -64,7 +70,7 @@ export default function () {
     });
 
     // 4) Purchase (POST)
-    res = http.post(`${BASE_URL}/purchase.php`, formBody(purchasePayload), { headers: BASE_HEADERS });
+    res = http.post(`${BASE_URL}/purchase.php`, formBody(user), { headers: BASE_HEADERS });
     check(res, { "POST /purchase status 200": (r) => r.status === 200 });
 
     // 5) Confirmation (POST) - form compilation con dati utente
