@@ -1,0 +1,26 @@
+[
+  {
+    "inputName": "Tommaso",
+    "address": "123 Main",
+    "city": "Rome",
+    "state": "Italy",
+    "zipCode": "1234",
+    "cardType": "visa",
+    "creditCardNumber": "123456789",
+    "creditCardMonth": "11",
+    "creditCardYear": "2017",
+    "nameOnCard": "Tommaso"
+  },
+  {
+    "inputName": "Luca",
+    "address": "Via Roma 1",
+    "city": "Milano",
+    "state": "Italy",
+    "zipCode": "20100",
+    "cardType": "amex",
+    "creditCardNumber": "4111111111111111",
+    "creditCardMonth": "12",
+    "creditCardYear": "2027",
+    "nameOnCard": "Luca"
+  }
+]
