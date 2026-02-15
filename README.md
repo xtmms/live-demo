@@ -9,6 +9,7 @@ This project demonstrates how to implement a **realistic E2E test** for a web ap
 - ✅ Robust error handling and validation
 - ✅ Environment-based configuration
 - ✅ Custom JSON reporting with summaryHelper
+- ✅ Automated CI/CD integration with **GitHub Actions**
 
 ---
 
@@ -217,6 +218,23 @@ console.log(res.body);  // Prints response to k6 console
 - **Test App**: https://blazedemo.com (public demo)
 - **k6 Docs**: https://k6.io/docs/
 - **Community**: https://community.k6.io/
+
+---
+
+## 🔁 CI/CD Integration (GitHub Actions)
+
+This project includes a ready-to-use GitHub Actions workflow (`.github/workflows/load-test.yml`).
+
+It automatically runs:
+1. On every **Push** to `main`
+2. On every **Pull Request** to `main`
+3. Manually via **Workflow Dispatch**
+
+### Test Steps in CI:
+1. **Checkout**: Clones the repo.
+2. **Run k6**: Executes `Scripts/blaze-custom.js` using the official `grafana/k6-action`.
+   - Failing thresholds (e.g., p95 > 800ms) will **fail the pipeline**.
+3. **Upload Artifacts**: Saves the JSON report (`Output/Summary/*.json`) as a build artifact for analysis.
 
 ---
 
