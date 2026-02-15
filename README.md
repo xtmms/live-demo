@@ -121,8 +121,7 @@ k6 run blaze-custom.js
 #### Full load test (using config from env.js)
 
 ```powershell
-cd .\Scripts\
-k6 run blaze-custom.js --summary-trend-stats="med,p(95),p(99)"
+k6 run Scripts/blaze-custom.js --summary-trend-stats="med,p(95),p(99)"
 ```
 
 #### With environment override
