@@ -2,9 +2,10 @@ import { group, sleep, check } from "k6";
 import http from "k6/http";
 import { SharedArray } from "k6/data";
 import { customSummary } from "../Helpers/summaryHelper.js";
+import { pickFromArray, formBody } from "../Helpers/utils.js";
 
 // ---------- LOAD CONFIG / DATA ----------
-const envCfg = JSON.parse(open("../config/env.json"));
+import { config as envCfg } from "../Config/env.js";
 
 const users = new SharedArray("users", () => JSON.parse(open("../data/users.json")));
 const routes = new SharedArray("routes", () => JSON.parse(open("../data/routes.json")));
@@ -26,17 +27,7 @@ export const options = {
 };
 
 // ---------- HELPERS ----------
-function pickFromArray(arr) {
-  // distribuisce in modo deterministico tra VU/iterazione
-  return arr[(__VU + __ITER) % arr.length];
-}
 
-function formBody(obj) {
-  // BlazeDemo si aspetta x-www-form-urlencoded
-  return Object.entries(obj)
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
-    .join("&");
-}
 
 export function handleSummary(data) {
   return customSummary(data);
@@ -63,14 +54,35 @@ export default function () {
     res = http.post(`${BASE_URL}/reserve.php`, formBody(route), { headers: BASE_HEADERS });
     check(res, { "POST /reserve status 200": (r) => r.status === 200 });
 
-    // 3) Correlation: estrarre flight/price/airline dalla pagina HTML di selezione volo, 
-    const flight = res.html().find("tr td input.btn").first().attr("value"); // value del bottone "Choose This Flight"
-    check(flight, {
-      "flight id extracted": (f) => f !== undefined && f !== null,
+    // 3) Correlation: estrarre flight/price/airline dalla pagina HTML di selezione volo
+    const doc = res.html();
+    const flight = doc.find("input[name=flight]").first().attr("value");
+    const price = doc.find("input[name=price]").first().attr("value");
+    const airline = doc.find("input[name=airline]").first().attr("value");
+
+    const correlationCheck = check(flight, {
+      "flight id extracted": (f) => f,
+    }) && check(price, {
+      "price extracted": (p) => p,
+    }) && check(airline, {
+      "airline extracted": (a) => a,
     });
 
+    if (!correlationCheck) {
+      console.error(`[VU ${__VU}] Correlation failed: could not extract flight data. Skipping purchase.`);
+      return;
+    }
+
     // 4) Purchase (POST)
-    res = http.post(`${BASE_URL}/purchase.php`, formBody(user), { headers: BASE_HEADERS });
+    const purchasePayload = {
+      flight: flight,
+      price: price,
+      airline: airline,
+      fromPort: route.fromPort,
+      toPort: route.toPort,
+    };
+
+    res = http.post(`${BASE_URL}/purchase.php`, formBody(purchasePayload), { headers: BASE_HEADERS });
     check(res, { "POST /purchase status 200": (r) => r.status === 200 });
 
     // 5) Confirmation (POST) - form compilation con dati utente

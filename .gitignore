@@ -1,0 +1,5 @@
+################################################################################
+# Ignore all files in the Output folder, but keep the folder itself
+################################################################################
+Output/Summary/*
+!Output/Summary/.gitkeep
