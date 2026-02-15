@@ -16,7 +16,7 @@ export function customSummary(data) {
   const SS = pad2(now.getSeconds());
 
   // Nome file finale
-  const fileBase = `../Output/Summary/summary_${dd}${mm}${yy}_${HH}_${SS}`;
+  const fileBase = `Output/Summary/summary_${dd}${mm}${yy}_${HH}_${SS}`;
 
   // File JSON formattato bene
   const jsonContent = JSON.stringify(data, null, 2);

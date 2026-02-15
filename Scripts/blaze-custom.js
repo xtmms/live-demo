@@ -7,8 +7,8 @@ import { pickFromArray, formBody } from "../Helpers/utils.js";
 // ---------- LOAD CONFIG / DATA ----------
 import { config as envCfg } from "../Config/env.js";
 
-const users = new SharedArray("users", () => JSON.parse(open("../data/users.json")));
-const routes = new SharedArray("routes", () => JSON.parse(open("../data/routes.json")));
+const users = new SharedArray("users", () => JSON.parse(open("../Data/users.json")));
+const routes = new SharedArray("routes", () => JSON.parse(open("../Data/routes.json")));
 
 // ---------- ENV OVERRIDES ----------
 const BASE_URL = __ENV.BASE_URL || envCfg.baseUrl;
